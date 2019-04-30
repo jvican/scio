@@ -198,15 +198,9 @@ val commonSettings = Sonatype.sonatypeSettings ++ assemblySettings ++ Seq(
 lazy val itSettings = Defaults.itSettings ++ Seq(
   scalastyleSources in Compile ++= (unmanagedSourceDirectories in IntegrationTest).value,
   // exclude all sources if we don't have GCP credentials
-  (excludeFilter in unmanagedSources) in IntegrationTest := {
-    if (BuildCredentials.exists) {
-      HiddenFileFilter
-    } else {
-      HiddenFileFilter || "*.scala"
-    }
-  }
+  sourceDirectories in IntegrationTest := (sourceDirectories in IntegrationTest).value.filterNot(_.toString.contains("/scala"))
 ) ++
-  inConfig(IntegrationTest)(BloopDefaults.configSettings) ++
+  //inConfig(IntegrationTest)(BloopDefaults.configSettings) ++
   inConfig(IntegrationTest)(scalafmtConfigSettings) ++
   inConfig(IntegrationTest)(scalafixConfigSettings(IntegrationTest))
 
@@ -277,7 +271,7 @@ def beamRunnerSettings: Seq[Setting[_]] = Seq(
 lazy val protobufSettings = Def.settings(
   version in ProtobufConfig := protobufVersion,
   protobufRunProtoc in ProtobufConfig := (args =>
-    com.github.os72.protocjar.Protoc.runProtoc("-v3.7.0" +: args.toArray))
+    scala.sys.process.Process("/home/jvican/.nix-profile/bin/protoc","--version" +: "v3.7.0" +: args)!)
 )
 
 lazy val root: Project = Project("scio", file("."))
@@ -740,13 +734,7 @@ lazy val scioExamples: Project = Project(
     ),
     addCompilerPlugin(paradiseDependency),
     // exclude problematic sources if we don't have GCP credentials
-    excludeFilter in unmanagedSources := {
-      if (BuildCredentials.exists) {
-        HiddenFileFilter
-      } else {
-        HiddenFileFilter || "TypedBigQueryTornadoes*.scala"
-      }
-    },
+  sourceDirectories in Compile := (sourceDirectories in Compile).value.filterNot(_.toString.contains("/scala")),
     sources in doc in Compile := List()
   )
   .dependsOn(
