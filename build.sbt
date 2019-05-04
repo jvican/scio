@@ -289,9 +289,8 @@ def beamRunnerSettings: Seq[Setting[_]] = Seq(
 )
 
 lazy val protobufSettings = Def.settings(
-  version in ProtobufConfig := protobufVersion
-  /*protobufRunProtoc in ProtobufConfig := (args =>
-    scala.sys.process.Process("/home/jvican/.nix-profile/bin/protoc","--version" +: "v3.7.0" +: args)!)*/
+  version in ProtobufConfig := protobufVersion,
+  protobufRunProtoc in ProtobufConfig := (args => scala.sys.process.Process("./protoc", args)!)
 )
 
 lazy val root: Project = Project("scio", file("."))
