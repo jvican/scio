@@ -19,6 +19,7 @@ package com.spotify.scio.extra.bigquery
 
 import java.nio.ByteBuffer
 
+import com.spotify.scio.avro._
 import com.google.common.io.BaseEncoding
 import com.google.protobuf.ByteString
 import com.spotify.scio.bigquery.TableRow
