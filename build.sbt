@@ -571,6 +571,7 @@ lazy val scioElasticsearch6: Project = Project(
     scioTest % "test"
   )
 
+import _root_.sbtavro.SbtAvro.autoImport.{generate => avroGenerate}
 lazy val scioExtra: Project = Project(
   "scio-extra",
   file("scio-extra")
@@ -593,6 +594,7 @@ lazy val scioExtra: Project = Project(
       "io.circe" %% "circe-parser"
     ).map(_ % circeVersion),
     AvroConfig / version := avroVersion,
+    AvroConfig / avroGenerate := (AvroConfig / avroGenerate).dependsOn(scioSchemas / AvroConfig / avroGenerate).value,
     AvroConfig / sourceDirectory := baseDirectory.value / "src" / "test" / "avro",
     Compile / sourceDirectories := (Compile / sourceDirectories).value
       .filterNot(_.getPath.endsWith("/src_managed/main")),
